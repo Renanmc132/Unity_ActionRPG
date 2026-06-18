@@ -10,8 +10,6 @@ public class PlayerMovement : MonoBehaviour
     private int direction = 1;
 
 
-
-
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -31,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
         if (horizontalInput > 0 && direction != 1 || horizontalInput < 0 && direction != -1)
             Flip();
 
-        _rb.linearVelocity = new Vector2(horizontalInput,verticalInput) * moveSpeed;
+        _rb.linearVelocity = new Vector2(horizontalInput,verticalInput).normalized * moveSpeed;
 
 
 
