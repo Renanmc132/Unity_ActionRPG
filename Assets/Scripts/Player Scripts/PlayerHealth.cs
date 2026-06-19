@@ -1,23 +1,40 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     private int currentHealth;
-    private int health = 3;
+    private int maxHealth = 3;
+
+    public Slider healthSlider;
+    private Coroutine updateHealthBar;
 
     private void Awake()
     {
-        currentHealth = health;
+        currentHealth = maxHealth;
+
+        healthSlider.maxValue = maxHealth;
+        healthSlider.value = maxHealth;
     }
 
     public void ChangeHealth(int amount)
     {
         currentHealth += amount;
 
-        if(currentHealth <= 0)
+        StartCoroutine(UpdateHealthBar());
+
+    }
+
+    private IEnumerator UpdateHealthBar()
+    {
+        while (healthSlider.value >= currentHealth)
         {
-            gameObject.SetActive(false);
+            healthSlider.value = Mathf.Lerp(healthSlider.value, currentHealth, .007f);
+
+            yield return null;
         }
+
     }
 
 }
