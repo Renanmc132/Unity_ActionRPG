@@ -8,10 +8,20 @@ public class Enemy_Movement : MonoBehaviour
     private Animator _anim;
     private Transform player;
 
+    [Header("Player Detection")]
+    public Transform detectionPoint;
+    public float detectionArea = 4.31f;
+    public LayerMask playerLayer;
+
+    [Header("Attack")]
+    private float attackRange = 1.2f;
+    private float attackCooldown = 2;
+    private float attackCooldownTimer;
+
+
     private float moveSpeed = 3f;
     private EnemyState enemyState;
     private int direction = 1;
-    private bool isChasing;
 
     private void Awake()
     {
@@ -20,21 +30,33 @@ public class Enemy_Movement : MonoBehaviour
         ChangeState(EnemyState.isIdle);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        CheckForPlayer();
+
+        if(attackCooldownTimer > 0)
+        {
+            attackCooldownTimer -= Time.deltaTime;
+        }
+
         if (enemyState == EnemyState.isChasing)
         {
-            if (player.transform.position.x > transform.position.x && direction == -1 || player.transform.position.x < transform.position.x && direction == 1)
-                    Flip();
-
-            Vector2 moveDirection = player.transform.position - transform.position;
-
-            _rb.linearVelocity = moveDirection.normalized * moveSpeed;
+            Chase();
         }
-        else
+        else if(enemyState == EnemyState.isAttacking)
         {
             _rb.linearVelocity = Vector2.zero;
         }
+    }
+
+    private void Chase()
+    {
+         if (player.transform.position.x > transform.position.x && direction == -1 || player.transform.position.x < transform.position.x && direction == 1)
+            Flip();
+
+        Vector2 moveDirection = player.transform.position - transform.position;
+
+        _rb.linearVelocity = moveDirection.normalized * moveSpeed;
     }
 
     private void Flip()
@@ -43,23 +65,32 @@ public class Enemy_Movement : MonoBehaviour
         transform.localScale = new Vector3(direction, transform.localScale.y, transform.localScale.z);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void CheckForPlayer()
     {
-        if (collision.gameObject.tag == "Player") { 
+        Collider2D[] players = Physics2D.OverlapCircleAll(detectionPoint.position,detectionArea,playerLayer);
 
-            if (player == null)
-                player = collision.transform;
+        if(players.Length > 0)
+        {
+            player = players[0].transform;
 
-            ChangeState(EnemyState.isChasing);
+            if (Vector2.Distance(player.transform.position, transform.position) < attackRange && attackCooldownTimer <= 0)
+            {
+                attackCooldownTimer = attackCooldown;
+                ChangeState(EnemyState.isAttacking);
+            }else if(Vector2.Distance(player.transform.position, transform.position) > attackRange)
+            {
+                ChangeState(EnemyState.isChasing);
+            }
+
         }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Player")
+        else
         {
             ChangeState(EnemyState.isIdle);
+            _rb.linearVelocity = Vector2.zero;
         }
+        
+
+
     }
 
     private void ChangeState(EnemyState newState)
@@ -70,6 +101,10 @@ public class Enemy_Movement : MonoBehaviour
         }else if(enemyState == EnemyState.isChasing)
         {
             _anim.SetBool("isChasing", false);
+        }
+        else if (enemyState == EnemyState.isAttacking)
+        {
+            _anim.SetBool("isAttacking", false);
         }
 
         enemyState = newState;
@@ -82,8 +117,16 @@ public class Enemy_Movement : MonoBehaviour
         {
             _anim.SetBool("isChasing", true);
         }
+        else if (enemyState == EnemyState.isAttacking)
+        {
+            _anim.SetBool("isAttacking", true);
+        }
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(detectionPoint.position, detectionArea);
+    }
 
 }
 
@@ -91,7 +134,8 @@ public class Enemy_Movement : MonoBehaviour
 public enum EnemyState
 {
     isIdle,
-    isChasing
+    isChasing,
+    isAttacking
 }
 
 
