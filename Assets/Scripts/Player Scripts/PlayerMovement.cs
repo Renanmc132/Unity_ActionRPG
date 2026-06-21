@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D _rb;
     private Animator _anim;
     private int direction = 1;
+
+    private bool isKnockedback;
 
 
     void Awake()
@@ -20,16 +23,20 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        if (!isKnockedback)
+        {
 
-        _anim.SetFloat("xInput", Mathf.Abs(horizontalInput));
-        _anim.SetFloat("yInput", Mathf.Abs(verticalInput));
+            float horizontalInput = Input.GetAxis("Horizontal");
+            float verticalInput = Input.GetAxis("Vertical");
 
-        if (horizontalInput > 0 && direction != 1 || horizontalInput < 0 && direction != -1)
-            Flip();
+            _anim.SetFloat("xInput", Mathf.Abs(horizontalInput));
+            _anim.SetFloat("yInput", Mathf.Abs(verticalInput));
 
-        _rb.linearVelocity = new Vector2(horizontalInput,verticalInput) * moveSpeed;
+            if (horizontalInput > 0 && direction != 1 || horizontalInput < 0 && direction != -1)
+                Flip();
+
+            _rb.linearVelocity = new Vector2(horizontalInput,verticalInput) * moveSpeed;
+        }
 
 
 
@@ -42,6 +49,21 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = new Vector3(direction,transform.localScale.y,transform.localScale.z);
     }
 
+    public void Knockback(Transform enemy, float force, float stunTime)
+    {
+        isKnockedback = true;
+        _rb.linearVelocity = Vector2.zero;
+        Vector2 direction = (transform.position - enemy.position).normalized;
+        _rb.linearVelocity = direction * force;
+        StartCoroutine(KnockbackDuration(stunTime));
+
+    }
+
+    private IEnumerator KnockbackDuration(float stunTime)
+    {
+        yield return new WaitForSeconds(stunTime);
+        isKnockedback = false;
+    }
 
 
 }

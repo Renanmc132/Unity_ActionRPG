@@ -15,7 +15,7 @@ public class Enemy_Movement : MonoBehaviour
 
     [Header("Attack")]
     private float attackRange = 1.2f;
-    private float attackCooldown = 2;
+    private float attackCooldown = 1;
     private float attackCooldownTimer;
 
 
@@ -77,7 +77,7 @@ public class Enemy_Movement : MonoBehaviour
             {
                 attackCooldownTimer = attackCooldown;
                 ChangeState(EnemyState.isAttacking);
-            }else if(Vector2.Distance(player.transform.position, transform.position) > attackRange)
+            }else if(Vector2.Distance(player.transform.position, transform.position) > attackRange && enemyState != EnemyState.isAttacking)
             {
                 ChangeState(EnemyState.isChasing);
             }
