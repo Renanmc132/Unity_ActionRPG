@@ -11,15 +11,23 @@ public class PlayerMovement : MonoBehaviour
     private int direction = 1;
 
     private bool isKnockedback;
+    private PlayerCombat _playerCombat;
 
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
+        _playerCombat = GetComponent<PlayerCombat>();
     }
 
-
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Z) || Input.GetMouseButtonDown(0))
+        {
+            _playerCombat.Attack();
+        }
+    }
 
     void FixedUpdate()
     {

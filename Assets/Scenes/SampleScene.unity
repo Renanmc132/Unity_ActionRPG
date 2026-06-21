@@ -5230,6 +5230,7 @@ GameObject:
   - component: {fileID: 1800990738}
   - component: {fileID: 1800990739}
   - component: {fileID: 1800990740}
+  - component: {fileID: 1800990741}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -5422,6 +5423,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4effe27acb78e748a00a513c2894ccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+--- !u!114 &1800990741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800990732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79a41eed13a96a047a313b4d5481e95e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
 --- !u!1 &2016419355
 GameObject:
   m_ObjectHideFlags: 0
