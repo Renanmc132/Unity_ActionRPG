@@ -32,20 +32,24 @@ public class Enemy_Movement : MonoBehaviour
 
     private void Update()
     {
-        CheckForPlayer();
+        if(enemyState != EnemyState.isKnockedback)
+        {
 
-        if(attackCooldownTimer > 0)
-        {
-            attackCooldownTimer -= Time.deltaTime;
-        }
+            CheckForPlayer();
 
-        if (enemyState == EnemyState.isChasing)
-        {
-            Chase();
-        }
-        else if(enemyState == EnemyState.isAttacking)
-        {
-            _rb.linearVelocity = Vector2.zero;
+            if(attackCooldownTimer > 0)
+            {
+                attackCooldownTimer -= Time.deltaTime;
+            }
+
+            if (enemyState == EnemyState.isChasing)
+            {
+                Chase();
+            }
+            else if(enemyState == EnemyState.isAttacking)
+            {
+                _rb.linearVelocity = Vector2.zero;
+            }
         }
     }
 
@@ -93,7 +97,7 @@ public class Enemy_Movement : MonoBehaviour
 
     }
 
-    private void ChangeState(EnemyState newState)
+    public void ChangeState(EnemyState newState)
     {
         if(enemyState == EnemyState.isIdle)
         {
@@ -135,7 +139,8 @@ public enum EnemyState
 {
     isIdle,
     isChasing,
-    isAttacking
+    isAttacking,
+    isKnockedback
 }
 
 
